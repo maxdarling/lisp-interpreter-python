@@ -1,5 +1,5 @@
 import re
-from scheme_token import Token, TokenType
+from .scheme_token import Token, TokenType
 
 # design notes:
 # 1. I have duplicated work between the token regex match and deciding the token types.

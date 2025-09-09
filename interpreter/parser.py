@@ -1,21 +1,12 @@
-import sys
 from typing import TypeAlias
-from scanner import Scanner
-from scheme_token import Token, TokenType
+from .scheme_token import Token, TokenType
 
-'''
-Exercise: implement a simple Scheme Lisp parser
-usage: `python3 parser.py foo.scm`
+# design notes:
+# 1. In the below grammar, I distinguished op from IDENTIFIER, but that causes ambiguity.
+# This would be fine in a Java grammar, say. But not in Scheme. Scheme is "lexically open" -
+# you can do stuff like `(define + *)`, so '+' is just an identifier, not a special symbol.
+# Interesting rabbit hole!
 
-we'll use a very basic AST representation of nested lists and string/number literals.
-example: `(first (list 1 (+ 2 3) 9))` -> ["first", ["list", 1, ["+", 2, 3], 9]].
-
-design notes/disclaimers:
-- In the below grammar, I distinguished op from IDENTIFIER, but that causes ambiguity.
-This would be fine in a Java grammar, say. But not in Scheme. Scheme is "lexically open" -
-you can do stuff like `(define + *)`, so '+' is just an identifier, not a special symbol.
-Interesting rabbit hole!
-'''
 
 # --- GRAMMAR (in progress) ---
 # program    : expression*
@@ -93,21 +84,3 @@ class Parser:
                 self._advance()
                 return True
         return False
-
-
-
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("Usage: parser.py [.scm file]")
-        exit(0)
-
-    filepath = sys.argv[1]
-    with open(filepath, 'r', encoding=None) as f:
-        raw = f.read()
-        print("RAW:")
-        print(raw)
-        print("\nTOKENS:")
-        tokens = Scanner(raw).getTokens()
-        print(tokens)
-        print("\nAST:")
-        print(Parser(tokens).parse())
