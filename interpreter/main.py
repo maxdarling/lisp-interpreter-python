@@ -4,10 +4,20 @@ from .parser import Parser
 
 # Exercise: implement a simple Scheme Lisp parser
 #
-# we'll use a very basic AST representation of nested lists and string/number literals.
-# example: `(first (list 1 (+ 2 3) 9))` -> ["first", ["list", 1, ["+", 2, 3], 9]].
-#
 # extension: implement basic interpretation
+#
+# used for recurse center interview on 9/9/25. in ~25 mins I implemented addition.
+# this code is now a couple hours of heavy cleanup beyond that.
+#
+# thoughts:
+# - i want static types
+# - i want a data-only Expr class, with the interpreting logic hooked up via
+# the interpreter pattern, a la crafting iterpreters.
+#
+# todo:
+# - implement define for vars
+# - implement functions
+# - implement more builtin ops
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -23,4 +33,7 @@ if __name__ == "__main__":
         tokens = Scanner(raw).getTokens()
         print(tokens)
         print("\nAST:")
-        print(Parser(tokens).parse())
+        ast = Parser(tokens).parse()
+        print(ast.toString())
+        print("\nVALS:")
+        print(ast.interpret())

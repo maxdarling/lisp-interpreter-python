@@ -1,5 +1,6 @@
 from typing import TypeAlias
 from .scheme_token import Token, TokenType
+from .expr import Expr, Atom, List
 
 # design notes:
 # 1. In the below grammar, I distinguished op from IDENTIFIER, but that causes ambiguity.
@@ -15,41 +16,37 @@ from .scheme_token import Token, TokenType
 # atom       : op | IDENTIFIER | NUMBER | STRING
 # op         : '+' | '-'
 
-AstNode: TypeAlias = list #  todo: make into full class
-
 class Parser:
     def __init__(self, tokens: list[Token]):
         self.tokens = tokens + [Token(TokenType.EOF, None)]
         self.idx = 0
 
-    # parse a single expression into an AstNode
-    def parse(self) -> AstNode:
+    def parse(self) -> list[Expr]:
         return self._expression()
 
-    def _expression(self) -> AstNode:
+    def _expression(self) -> Expr:
         if self._match(TokenType.LEFT_PAREN):
             return self._list()
+        return self._atom()
 
-        return self._atom().val # todo: change. currently sketch
-
-    def _list(self) -> AstNode:
-        node = []
+    def _list(self) -> List:
+        exprs = []
         while not self._check(TokenType.RIGHT_PAREN):
             expr = self._expression()
-            node.append(expr)
+            exprs.append(expr)
 
         self._consume(TokenType.RIGHT_PAREN, "Expected ')'.")
-        return node
+        return List(exprs)
 
 
-    def _atom(self) -> Token:
+    def _atom(self) -> Atom:
         if self._match(
             TokenType.PLUS, TokenType.MINUS,
             TokenType.IDENTIFIER,
             TokenType.NUMBER,
             TokenType.STRING
         ):
-            return self._previous()
+            return Atom(self._previous())
 
         raise RuntimeError("Expected expression.")
 
